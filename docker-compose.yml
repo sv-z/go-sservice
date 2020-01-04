@@ -1,6 +1,6 @@
 version: "3"
 services:
-  go-docker-image:
+  go-api:
     build:
       context: .
       dockerfile: ./.img/Dockerfile
@@ -8,3 +8,22 @@ services:
       - '80:1234'
     volumes:
       - ./source/:/app
+    links:
+      - postgres
+    environment:
+      PGHOST: 'postgres'
+      PGDATABASE: 'postgres'
+      PGUSER: 'postgres'
+      PGPASSWORD: 'pass_postgres'
+  postgres:
+    image: postgres:latest
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: 'pass_postgres'
+    volumes:
+      - database_data:/var/lib/postgresql/data
+volumes:
+  database_data:
+    driver: local
