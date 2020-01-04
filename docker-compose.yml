@@ -1,0 +1,10 @@
+version: "3"
+services:
+  go-docker-image:
+    build:
+      context: .
+      dockerfile: ./.img/Dockerfile
+    ports:
+      - '80:1234'
+    volumes:
+      - ./source/:/app
