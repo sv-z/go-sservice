@@ -4,10 +4,16 @@ WORKDIR /app
 
 COPY ./ /app
 
-RUN cd ./source/ && go mod download
+#RUN cd ./cmd/api && go mod download
 
 RUN go get github.com/githubnemo/CompileDaemon
 
-RUN cd ./source/ && go build main.go
+#RUN echo 'alias run_app1="/usr/bin/make -f /app/.img/Makefile env"' >> ~/.bashrc \
+#  && . ~/.bashrc
 
-ENTRYPOINT CompileDaemon --build="go build main.go" --command=./main
+# non-interactive shells you should create a small script and put it in your path, i.e.:
+# https://stackoverflow.com/questions/36388465/how-to-set-bash-aliases-for-docker-containers-in-dockerfile
+RUN printf '#!/bin/bash\n/usr/bin/make -f /app/.img/Makefile env' > /usr/bin/run_app && chmod +x /usr/bin/run_app
+
+#ENTRYPOINT CompileDaemon --build="go build ./../cmd/api/main.go" --command=./main
+ENTRYPOINT run_app
