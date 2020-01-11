@@ -1,51 +1,45 @@
 package infrastructure
 
 import (
-	"database/sql"
-	_ "github.com/lib/pq"
-	//"github.com/mitchellh/mapstructure"
+	"fmt"
+
+	repositoryPostgres "github.com/sv-z/in-scaner/internal/infrastructure/repository"
+	"github.com/sv-z/in-scaner/internal/model"
 )
 
-// Config ...
-type Config struct {
-	DatabaseUrl string `toml:"database_url"`
+type repositoryKey string
+
+type RepositoryManager struct {
+	connectionHolder *ConnectionHolder
+	repositories     map[repositoryKey]interface{}
 }
 
-func NewConfig() *Config {
-	return &Config{
-		DatabaseUrl: "",
+// NewRepositoryManager ...
+func NewRepositoryManager(con *ConnectionHolder) *RepositoryManager {
+
+	var repositories = make(map[repositoryKey]interface{})
+	repositories[repositoryKey("PostgresUserRepository")] = repositoryPostgres.NewUserRepository(con.postgresDB)
+
+	return &RepositoryManager{
+		connectionHolder: con,
+		repositories:     repositories,
 	}
 }
 
-type PostgresRepositoryManager struct {
-	db     *sql.DB
-	config *Config
+// return user repository
+func (rm *RepositoryManager) User() model.UserRepository {
+	key := repositoryKey("PostgresUserRepository")
+
+	return rm.getRepository(key).(model.UserRepository)
 }
 
-// New ...
-func New(config *Config) *PostgresRepositoryManager {
-	return &PostgresRepositoryManager{
-		config: config,
-	}
-}
+// fetch user repo
+func (rm *RepositoryManager) getRepository(key repositoryKey) interface{} {
+	repository, ok := rm.repositories[key]
 
-// Open ...
-func (prm *PostgresRepositoryManager) Open() error {
-	db, err := sql.Open("postgres", prm.config.DatabaseUrl)
-	if err != nil {
-		return err
+	if !ok {
+		panic(fmt.Errorf("the key %s not register yet", key))
 	}
 
-	if err := db.Ping(); err != nil {
-		return err
-	}
-
-	prm.db = db
-
-	return nil
-}
-
-// Close ...
-func (prm *PostgresRepositoryManager) Close() {
-
+	return repository
 }

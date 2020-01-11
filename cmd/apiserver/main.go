@@ -27,8 +27,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	apiserver := apiserver.New(config)
-	err = apiserver.Run()
+	server := apiserver.New(config)
+	err = server.Run()
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(2)
