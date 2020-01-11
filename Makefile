@@ -10,3 +10,9 @@ test:
 
 help:
 	./apiserver -help
+
+run_env:
+	docker-compose up -d
+
+stop_env:
+	docker-compose down && docker-compose down -v && docker-compose rm -f
