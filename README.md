@@ -16,8 +16,9 @@ Then visit `http://localhost:8080` in your browser to view the API.
 ## API Documentation
 #### JSON-RPC 2.0 API
  - **user**
-    - [Register](documentation/api-json-rpc/user-register.md)
+    - [Register](documentation/api-json-rpc/user-register.md) - Create new user in system
+    - [Find](documentation/api-json-rpc/find-users.md)  - Find users by params
 
 #### REST API
  - **user**
-    - [POST](documentation/api-rest/user-post.md)
+    - [POST](documentation/api-rest/user-post.md) - Create new user in system

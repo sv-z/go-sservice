@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/lib/pq"
 	"github.com/mitchellh/mapstructure"
 
+	"github.com/sv-z/in-scanner/internal/infrastructure/errors"
 	"github.com/sv-z/in-scanner/internal/model"
 )
 
@@ -26,6 +28,14 @@ func (self UserRepositoryPostgres) Save(user *model.User) error {
 
 	query := "INSERT INTO users (email, encrypted_password) VALUES ($1, $2) RETURNING id"
 	if err := self.db.QueryRow(query, user.Email, user.EncryptedPassword).Scan(&user.Id); err != nil {
+
+		if err, ok := err.(*pq.Error); ok {
+			switch err.Code.Name() {
+			case "unique_violation":
+				return &errors.DuplicateRecord{Err: err}
+			}
+		}
+
 		panic(err)
 	}
 

@@ -8,19 +8,22 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/sv-z/in-scanner/internal/infrastructure"
+	"github.com/sv-z/in-scanner/internal/validator"
 )
 
 type server struct {
 	logger            *logrus.Logger
 	router            *mux.Router
-	repositoryManager *infrastructure.RepositoryManagerInterface
+	repositoryManager infrastructure.RepositoryManagerInterface
+	validator         *validator.Validator
 }
 
 func newServer(rm infrastructure.RepositoryManagerInterface) *server {
 	s := &server{
 		logger:            logrus.New(),
 		router:            mux.NewRouter(),
-		repositoryManager: &rm,
+		repositoryManager: rm,
+		validator:         validator.New(),
 	}
 
 	s.configureRouter()
