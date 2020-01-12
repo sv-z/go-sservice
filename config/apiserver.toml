@@ -1,0 +1,3 @@
+bind_addr = ":8080"
+log_level = "error"
+postgres_database_url = "host=localhost dbname=in_scanner sslmode=disable user=in_scanner password=pass_postgres"

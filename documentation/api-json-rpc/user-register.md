@@ -23,7 +23,7 @@ curl -i -X POST -H "Content-Type: application/json; indent=4" -d '{
         "password": "A!a1"
     },
     "id": "50836230-ea1b-11e7-af6b-0242ac12000f"
-}' http://localhost:1234/api/
+}' http://localhost:8080/api/
 ```
 
 Response:
