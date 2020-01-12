@@ -1,87 +1,40 @@
 package apiserver
 
 import (
-	"io"
+	"database/sql"
 	"net/http"
 
-	"github.com/gorilla/mux"
-	"github.com/sirupsen/logrus"
+	_ "github.com/lib/pq"
 
 	"github.com/sv-z/in-scaner/internal/infrastructure"
 )
 
-// APIServer ...
-type APIServer struct {
-	config            *Config
-	logger            *logrus.Logger
-	router            *mux.Router
-	connectionHolder  *infrastructure.ConnectionHolder
-	repositoryManager *infrastructure.RepositoryManager
-}
+// Start ...
+func Start(config *Config) error {
 
-// New ...
-func New(config *Config) *APIServer {
-	return &APIServer{
-		config:           config,
-		logger:           logrus.New(),
-		router:           mux.NewRouter(),
-		connectionHolder: infrastructure.New(config.Postgres),
-	}
-}
-
-func (server *APIServer) Run() error {
-	if err := server.configureLogger(); err != nil {
-		return err
-	}
-
-	server.configureRouter()
-	if err := server.configurePostgres(); err != nil {
-		return err
-	}
-
-	if err := server.configureRepositoryManager(server.connectionHolder); err != nil {
-		return err
-	}
-
-	server.logger.Info("Starting api server")
-
-	return http.ListenAndServe(server.config.BindAddr, server.router)
-}
-
-func (server *APIServer) configureLogger() error {
-	level, err := logrus.ParseLevel(server.config.LogLevel)
+	db, err := newPostgresDB(config.PostgresDatabaseUrl)
 	if err != nil {
 		return err
 	}
+	defer db.Close()
 
-	server.logger.SetLevel(level)
+	rm := infrastructure.NewRepositoryManager(db)
+	srv := newServer(rm)
+	srv.setLoggerLevel(config.LogLevel)
 
-	return nil
+	return http.ListenAndServe(config.BindAddr, srv)
 }
 
-func (server *APIServer) configureRouter() {
-	server.router.Handle("/ping", server.handlePing())
-}
-
-func (server *APIServer) configurePostgres() error {
-	store := infrastructure.New(server.config.Postgres)
-	if err := store.Init(); err != nil {
-		return err
+// postgres postgresDB init
+func newPostgresDB(databaseUrl string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", databaseUrl)
+	if err != nil {
+		return nil, err
 	}
 
-	server.connectionHolder = store
-
-	return nil
-}
-
-func (server *APIServer) configureRepositoryManager(connectionHolder *infrastructure.ConnectionHolder) error {
-	server.repositoryManager = infrastructure.NewRepositoryManager(connectionHolder)
-
-	return nil
-}
-
-func (server *APIServer) handlePing() http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		io.WriteString(writer, "pong")
+	if err := db.Ping(); err != nil {
+		return nil, err
 	}
+
+	return db, nil
 }

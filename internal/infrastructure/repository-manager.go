@@ -1,40 +1,43 @@
 package infrastructure
 
 import (
+	"database/sql"
 	"fmt"
 
-	repositoryPostgres "github.com/sv-z/in-scaner/internal/infrastructure/repository"
+	postgresRepository "github.com/sv-z/in-scaner/internal/infrastructure/postgres_repository"
 	"github.com/sv-z/in-scaner/internal/model"
 )
 
+type RepositoryManagerInterface interface {
+	User() model.UserRepository
+}
+
 type repositoryKey string
 
-type RepositoryManager struct {
-	connectionHolder *ConnectionHolder
-	repositories     map[repositoryKey]interface{}
+type repositoryManager struct {
+	repositories map[repositoryKey]interface{}
 }
 
 // NewRepositoryManager ...
-func NewRepositoryManager(con *ConnectionHolder) *RepositoryManager {
+func NewRepositoryManager(postgresDB *sql.DB) RepositoryManagerInterface {
 
 	var repositories = make(map[repositoryKey]interface{})
-	repositories[repositoryKey("PostgresUserRepository")] = repositoryPostgres.NewUserRepository(con.postgresDB)
+	repositories[repositoryKey("PostgresUserRepository")] = postgresRepository.NewUserRepository(postgresDB)
 
-	return &RepositoryManager{
-		connectionHolder: con,
-		repositories:     repositories,
+	return &repositoryManager{
+		repositories: repositories,
 	}
 }
 
 // return user repository
-func (rm *RepositoryManager) User() model.UserRepository {
+func (rm *repositoryManager) User() model.UserRepository {
 	key := repositoryKey("PostgresUserRepository")
 
 	return rm.getRepository(key).(model.UserRepository)
 }
 
 // fetch user repo
-func (rm *RepositoryManager) getRepository(key repositoryKey) interface{} {
+func (rm *repositoryManager) getRepository(key repositoryKey) interface{} {
 	repository, ok := rm.repositories[key]
 
 	if !ok {
