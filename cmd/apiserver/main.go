@@ -27,7 +27,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = apiserver.Start(config)
+	err = apiserver.StartRestServer(config)
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(2)

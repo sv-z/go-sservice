@@ -9,8 +9,8 @@ import (
 	"github.com/sv-z/in-scaner/internal/infrastructure"
 )
 
-// Start ...
-func Start(config *Config) error {
+// StartRestServer ...
+func StartRestServer(config *Config) error {
 
 	db, err := newPostgresDB(config.PostgresDatabaseUrl)
 	if err != nil {
