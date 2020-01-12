@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 
-	postgresRepository "github.com/sv-z/in-scaner/internal/infrastructure/postgres_repository"
-	"github.com/sv-z/in-scaner/internal/model"
+	postgresRepository "github.com/sv-z/in-scanner/internal/infrastructure/postgres_repository"
+	"github.com/sv-z/in-scanner/internal/model"
 )
 
 type RepositoryManagerInterface interface {

@@ -7,7 +7,7 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 
-	"github.com/sv-z/in-scaner/internal/model"
+	"github.com/sv-z/in-scanner/internal/model"
 )
 
 type UserRepositoryPostgres struct {

@@ -7,7 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 
-	"github.com/sv-z/in-scaner/internal/infrastructure"
+	"github.com/sv-z/in-scanner/internal/infrastructure"
 )
 
 type server struct {
@@ -43,7 +43,13 @@ func (srv *server) ServeHTTP(writer http.ResponseWriter, request *http.Request) 
 
 func (srv *server) configureRouter() {
 	srv.router.HandleFunc("/ping", srv.handlePing()).Methods("GET")
-	srv.router.HandleFunc("/info", srv.handlePing()).Methods("GET")
+	srv.router.HandleFunc("/info", srv.handleInfo()).Methods("GET")
+
+	// json-rps server
+	srv.router.Handle("/api/", handleJsonRpcRequest(srv))
+
+	// rest server
+	handleRestRequest(srv)
 }
 
 func (srv *server) handlePing() http.HandlerFunc {
@@ -54,6 +60,6 @@ func (srv *server) handlePing() http.HandlerFunc {
 
 func (srv *server) handleInfo() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		io.WriteString(writer, "ServerName: InScanner")
+		io.WriteString(writer, "Server Name: InScanner")
 	}
 }

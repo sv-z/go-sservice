@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/BurntSushi/toml"
-	"github.com/sv-z/in-scaner/internal/app/apiserver"
+	"github.com/sv-z/in-scanner/internal/app/apiserver"
 	"log"
 	"os"
 )
@@ -27,7 +27,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = apiserver.StartRestServer(config)
+	err = apiserver.Start(config)
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(2)
