@@ -44,6 +44,7 @@ func (srv *server) ServeHTTP(writer http.ResponseWriter, request *http.Request) 
 func (srv *server) configureRouter() {
 	srv.router.HandleFunc("/ping", srv.handlePing()).Methods("GET")
 	srv.router.HandleFunc("/info", srv.handleInfo()).Methods("GET")
+	srv.router.HandleFunc("/", srv.handleInfo()).Methods("GET")
 
 	// json-rps server
 	srv.router.Handle("/api/", handleJsonRpcRequest(srv))
@@ -54,7 +55,7 @@ func (srv *server) configureRouter() {
 
 func (srv *server) handlePing() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		io.WriteString(writer, "pong")
+		io.WriteString(writer, "PONG")
 	}
 }
 
