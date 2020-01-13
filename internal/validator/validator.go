@@ -1,13 +1,31 @@
 package validator
 
 import (
+	"encoding/json"
+	"fmt"
+	"strings"
+
 	valid "github.com/go-playground/validator/v10"
 	"github.com/go-playground/validator/v10/non-standard/validators"
-	"strings"
 )
 
 type Validator struct {
 	validate *valid.Validate
+}
+
+type Errors map[string][]map[string]interface{}
+
+// Error returns the error string of Errors.
+func (es Errors) Error() string {
+	if len(es) == 0 {
+		return ""
+	}
+	jsonString, err := json.Marshal(es)
+	if err != nil {
+		panic(fmt.Sprintf("Cannot decode errors to string, due error: %T - %v", err.Error(), err))
+	}
+
+	return string(jsonString)
 }
 
 func New() *Validator {
@@ -19,7 +37,7 @@ func New() *Validator {
 	return &validator
 }
 
-func (this *Validator) Validate(object interface{}) map[string][]map[string]interface{} {
+func (this *Validator) Validate(object interface{}) Errors {
 	err := this.validate.Struct(object)
 
 	if err != nil {

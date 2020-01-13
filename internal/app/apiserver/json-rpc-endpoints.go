@@ -71,11 +71,7 @@ func (api *UserJsonRpcApi) Find(_ *http.Request, query *FindQuery, result *[]int
 	users := api.srv.repositoryManager.User().GetAll()
 	res := make([]interface{}, len(users))
 	for i, user := range users {
-		responseRow := make(map[string]interface{})
-		responseRow["id"] = user.Id
-		responseRow["email"] = user.Email
-
-		res[i] = responseRow
+		res[i] = user
 	}
 
 	*result = res

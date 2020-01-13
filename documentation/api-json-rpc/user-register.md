@@ -34,3 +34,26 @@ Response:
     "id": "50836230-ea1b-11e7-af6b-0242ac12000f"
 }
 ```
+
+Validation error response:
+```json
+{
+    "jsonrpc": "2.0",
+    "error": {
+        "code": -32602,
+        "message": "Validation error.",
+        "data": {
+            "email": [
+                {
+                    "code": "a9fce4d8-7275-4727-956a-df4f21a10004",
+                    "data": {
+                        "value": "admexample.com"
+                    },
+                    "message": "This value 'admexample.com' is not a valid email address."
+                }
+            ]
+        }
+    },
+    "id": "50836230-ea1b-11e7-af6b-0242ac12000f"
+}
+```

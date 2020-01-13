@@ -23,9 +23,9 @@ type UserRepository interface {
 }
 
 type User struct {
-	Id                int
-	Email             string
-	EncryptedPassword string
+	Id                int    `json:"id"`
+	Email             string `json:"email"`
+	EncryptedPassword string `json:"-"`
 }
 
 func (u User) String() string {
