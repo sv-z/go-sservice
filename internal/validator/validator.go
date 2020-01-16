@@ -9,6 +9,8 @@ import (
 	"github.com/go-playground/validator/v10/non-standard/validators"
 )
 
+type Constraint valid.Func
+
 type Validator struct {
 	validate *valid.Validate
 }
@@ -37,14 +39,21 @@ func New() *Validator {
 	return &validator
 }
 
-func (this *Validator) Validate(object interface{}) Errors {
-	err := this.validate.Struct(object)
+// AddConstraint ...
+func (val *Validator) AddConstraint(name string, message string, code string, fn Constraint) {
+	val.validate.RegisterValidation(name, valid.Func(fn))
+	addErrorMap(name, message, code)
+}
+
+// Validate ...
+func (val *Validator) Validate(object interface{}) Errors {
+	err := val.validate.Struct(object)
 
 	if err != nil {
 
-		// this check is only needed when your code could produce
+		// val check is only needed when your code could produce
 		// an invalid value for validation such as interface with nil
-		// value most including myself do not usually have code like this.
+		// value most including myself do not usually have code like val.
 		if _, ok := err.(*valid.InvalidValidationError); ok {
 			panic(err)
 		}

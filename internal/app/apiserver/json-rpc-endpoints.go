@@ -26,7 +26,7 @@ type UserJsonRpcApi struct {
 }
 
 type UserRegisterCommand struct {
-	Email    string `validate:"notblank,email"`
+	Email    string `validate:"notblank,email,email_not_exist"`
 	Password string `validate:"notblank,max=20,min=4,pass_regex"`
 }
 

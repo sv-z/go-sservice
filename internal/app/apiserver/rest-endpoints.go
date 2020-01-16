@@ -12,7 +12,8 @@ import (
 func handleRestRequest(srv *server) {
 	api := UserRestApi{srv: srv}
 
-	srv.router.HandleFunc("/users", api.handleUserCreate()) // .Methods("GET")
+	srv.router.HandleFunc("/users", api.handleUserFind()).Methods("GET")
+	srv.router.HandleFunc("/users", api.handleUserCreate()).Methods("POST")
 }
 
 // UserRestApi ...
@@ -31,6 +32,7 @@ func (api *UserRestApi) error(writer http.ResponseWriter, request *http.Request,
 }
 
 func (api *UserRestApi) respond(writer http.ResponseWriter, request *http.Request, code int, data interface{}) {
+	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(code)
 	if data != nil {
 		if err := json.NewEncoder(writer).Encode(data); err != nil {
@@ -42,7 +44,7 @@ func (api *UserRestApi) respond(writer http.ResponseWriter, request *http.Reques
 func (api *UserRestApi) handleUserCreate() http.HandlerFunc {
 
 	type requestData struct {
-		Email    string `json:"email"validate:"notblank,email"`
+		Email    string `json:"email"validate:"notblank,email,email_not_exist"`
 		Password string `json:"password"validate:"notblank,max=20,min=4,pass_regex"`
 	}
 
@@ -66,5 +68,12 @@ func (api *UserRestApi) handleUserCreate() http.HandlerFunc {
 		}
 
 		api.respond(writer, request, http.StatusCreated, nil)
+	}
+}
+
+func (api *UserRestApi) handleUserFind() http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		users := api.srv.repositoryManager.User().GetAll()
+		api.respond(writer, request, http.StatusOK, users)
 	}
 }

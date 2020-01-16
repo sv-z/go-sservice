@@ -1,4 +1,4 @@
-# User POST
+# Users POST
 
 ### Parameters 
 - **email**(required) - Correct user's email address

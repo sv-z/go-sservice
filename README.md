@@ -20,5 +20,6 @@ Then visit `http://localhost:8080` in your browser to view the API.
     - [Find](documentation/api-json-rpc/find-users.md)  - Find users by params
 
 #### REST API
- - **user**
-    - [POST](documentation/api-rest/user-post.md) - Create new user in system
+ - **users**
+    - [GET](documentation/api-rest/users-get.md) - Get all users
+    - [POST](documentation/api-rest/users-post.md) - Create new user in system

@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 
+	validatorBootstrap "github.com/sv-z/in-scanner/internal/app/validator"
 	"github.com/sv-z/in-scanner/internal/infrastructure"
 	"github.com/sv-z/in-scanner/internal/validator"
 )
@@ -23,7 +24,7 @@ func newServer(rm infrastructure.RepositoryManagerInterface) *server {
 		logger:            logrus.New(),
 		router:            mux.NewRouter(),
 		repositoryManager: rm,
-		validator:         validator.New(),
+		validator:         validatorBootstrap.New(rm),
 	}
 
 	s.configureRouter()
