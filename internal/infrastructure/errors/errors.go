@@ -1,13 +1,8 @@
 package errors
 
-type StoreError struct {
-}
+import (
+	"errors"
+)
 
-type DuplicateRecord struct {
-	Err error
-	StoreError
-}
-
-func (e *StoreError) Error() string {
-	return "An infrastructure error occurred."
-}
+var NoRecord = errors.New("record not found")
+var DuplicateRecord = errors.New("record already exists")

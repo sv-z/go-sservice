@@ -13,7 +13,7 @@ type UserRepository interface {
 	Delete(user *User)
 
 	// Get entity by id, if entity not found return error
-	GetById(userId int) *User
+	GetById(userId int) (*User, error)
 
 	// Find one entity by email, if entity not found return nil
 	FindByEmail(email string) *User

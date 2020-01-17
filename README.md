@@ -21,5 +21,6 @@ Then visit `http://localhost:8080` in your browser to view the API.
 
 #### REST API
  - **users**
-    - [GET](documentation/api-rest/users-get.md) - Get all users
-    - [POST](documentation/api-rest/users-post.md) - Create new user in system
+    - [GET /users](documentation/api-rest/users-get.md) - Get all users
+    - [POST /users](documentation/api-rest/users-post.md) - Create new user in system
+    - [GET /users/{id}](documentation/api-rest/users-get-id.md) - Get user by id

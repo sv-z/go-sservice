@@ -4,7 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
+	"github.com/gorilla/mux"
+
+	"github.com/sv-z/in-scanner/internal/infrastructure/errors"
 	"github.com/sv-z/in-scanner/internal/model"
 	"github.com/sv-z/in-scanner/internal/validator"
 )
@@ -14,6 +18,7 @@ func handleRestRequest(srv *server) {
 
 	srv.router.HandleFunc("/users", api.handleUserFind()).Methods("GET")
 	srv.router.HandleFunc("/users", api.handleUserCreate()).Methods("POST")
+	srv.router.HandleFunc("/users/{id:[0-9]+}", api.handleGetUser()).Methods("GET")
 }
 
 // UserRestApi ...
@@ -75,5 +80,25 @@ func (api *UserRestApi) handleUserFind() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		users := api.srv.repositoryManager.User().GetAll()
 		api.respond(writer, request, http.StatusOK, users)
+	}
+}
+
+func (api *UserRestApi) handleGetUser() http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		idParam := mux.Vars(request)["id"]
+		userId, err := strconv.Atoi(idParam)
+		if err != nil {
+			api.respond(writer, request, http.StatusBadRequest, nil)
+		}
+
+		user, err := api.srv.repositoryManager.User().GetById(userId)
+		switch err {
+		case errors.NoRecord:
+			api.respond(writer, request, http.StatusNotFound, nil)
+		case nil:
+			api.respond(writer, request, http.StatusOK, user)
+		default:
+			api.respond(writer, request, http.StatusBadRequest, nil)
+		}
 	}
 }

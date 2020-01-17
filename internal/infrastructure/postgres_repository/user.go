@@ -2,7 +2,6 @@ package postgres_repository
 
 import (
 	"database/sql"
-	"fmt"
 	"strings"
 
 	"github.com/lib/pq"
@@ -32,7 +31,7 @@ func (self UserRepositoryPostgres) Save(user *model.User) error {
 		if err, ok := err.(*pq.Error); ok {
 			switch err.Code.Name() {
 			case "unique_violation":
-				return &errors.DuplicateRecord{Err: err}
+				return errors.DuplicateRecord
 			}
 		}
 
@@ -49,15 +48,15 @@ func (self UserRepositoryPostgres) Delete(user *model.User) {
 	}
 }
 
-func (self UserRepositoryPostgres) GetById(userId int) *model.User {
+func (self UserRepositoryPostgres) GetById(userId int) (*model.User, error) {
 	user := model.User{}
 
 	query := "SELECT id, email, encrypted_password FROM users WHERE id=$1;"
 	switch err := self.db.QueryRow(query, userId).Scan(&user.Id, &user.Email, &user.EncryptedPassword); err {
 	case sql.ErrNoRows:
-		panic(fmt.Errorf("user with id %d not found", userId))
+		return nil, errors.NoRecord
 	case nil:
-		return &user
+		return &user, nil
 	default:
 		panic(err)
 	}
